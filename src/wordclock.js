@@ -33,27 +33,51 @@ var panel = {
 canvas = document.getElementById('myCanvas');
 ctx = canvas.getContext('2d');
 var glowColor, idleColor, gridColor;
-var letterFont = '40px Arial';
-SetTime();
+var letterFont = 'Arial';
+var letterFontStyle;
+var theme = 'dark';
 
-function Appearance(isDark) {
-    if (isDark) { //night time
+if (getCookie('theme') != '') {
+    theme = getCookie('theme');
+} else {
+    setCookie('theme', theme, 365);
+}
+
+Resize();
+
+function FullScreen() {
+    if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+    } else if (canvas.mozRequestFullScreen) {
+        canvas.mozRequestFullScreen();
+    } else if (canvas.webkitRequestFullscreen) {
+        canvas.webkitRequestFullscreen();
+    } else if (canvas.msRequestFullscreen) {
+        canvas.msRequestFullscreen();
+    }
+}
+
+
+function Appearance() {
+
+    if (theme == 'dark') { //dark time
         glowColor = 'yellow';
         idleColor = '#333333';
         gridColor = '#080808';
 
-    } else { //day time
+    } else { //light time
         glowColor = 'red';
         idleColor = 'lightgrey';
         gridColor = 'white';
 
     }
+
 }
 
 function SetTime() {
     var d = new Date();
-    Appearance(Math.trunc(d.getHours() / 12));
-    Resize(); // blackout the panel
+
+    BlackOut(); // blackout the panel
     var h = d.getHours() % 12;
     var m = d.getMinutes();
 
@@ -84,22 +108,27 @@ function LightUp(pnl) {
         let x = (idx % 12) * cellw + padx;
         let y = Math.trunc(idx / 12) * cellh + pady;
         ctx.fillStyle = glowColor;
-        ctx.font = letterFont;
+        ctx.font = letterFontStyle;
         let z = (cellw - ctx.measureText(letter[idx]).width) / 2;
         ctx.fillText(letter[idx], x + z, y + cellh - 15);
     }
 }
 
 function Resize() {
+    FullScreen();
     SetCanvasSize();
-    // draw board with numbers
+    SetTime();
+}
+
+function BlackOut() {
+    // draw board with numbers in idleColor
     let idx = 0;
     for (row = 0; row < 9; row++) {
         for (col = 0; col < 12; col++) {
             let x = col * cellw + padx;
             let y = row * cellh + pady;
             ctx.rect(x, y, cellw, cellh);
-            ctx.font = letterFont;
+            ctx.font = letterFontStyle;
             let z = (cellw - ctx.measureText(letter[idx]).width) / 2;
             ctx.fillStyle = idleColor;
             if (idx < 5 && idx != 2) ctx.fillStyle = glowColor;
@@ -112,9 +141,56 @@ function Resize() {
 }
 
 function SetCanvasSize() {
+    Appearance(theme);
     canvas.style = 'background-color:' + gridColor;
     ctx.canvas.width = document.documentElement.clientWidth;
-    ctx.canvas.height = document.documentElement.clientHeight - 10;
+    ctx.canvas.height = document.documentElement.clientHeight;
     cellw = (ctx.canvas.width - 2 * padx) / 12;
     cellh = (ctx.canvas.height - 2 * pady) / 9;
+    SetFontSize();
+}
+
+function SetFontSize() {
+    let sz = 200;
+    let w, h, metrics;
+    let tryFontStyle;
+    do {
+        sz -= 2;
+        tryFontStyle = sz + 'px ' + letterFont;
+        ctx.font = tryFontStyle;
+        metrics = ctx.measureText('W');
+        w = Math.trunc(metrics.width);
+        h = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+
+    } while (((cellw - w) < 40) && ((cellh - h) < 40)); //gap of 5 pixels on each side of the cell to fit and aesthetics
+    letterFontStyle = tryFontStyle; //set the correct font style with size to fit for display
+}
+
+canvas.onclick = function(event) {
+    theme = theme == 'dark' ? 'light' : 'dark';
+    setCookie('theme', theme, 365);
+    Resize();
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }

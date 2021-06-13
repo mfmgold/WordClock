@@ -56,6 +56,7 @@ https://love2dev.com/blog/beforeinstallprompt/
     }
 
     function ath(settings) {
+
         //prevent duplicate instances
         if (!_instance) {
             _instance = Object.assign({}, _default, settings);

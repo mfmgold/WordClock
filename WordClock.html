@@ -2,7 +2,16 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <meta name="apple-mobile-web-app-title" content="Word Clock">
+
+    <link rel="shortcut icon" sizes="16x16" href="./imgs/icon-16x16.png">
+    <link rel="shortcut icon" sizes="196x196" href="./imgs/icon-196x196.png">
+
+    <link rel="apple-touch-icon-precomposed" href="./imgs/icon-152x152.png">
     <style>
         body {
             height: 100vh;
@@ -21,14 +30,12 @@
     <link rel="stylesheet" type="text/css" href="./style/addtohomescreen.css">
     <script src="./src/addtohomescreen.js"></script>
     <script>
-        addToHomescreen({
-            //options
-        });
+        addToHomescreen();
     </script>
 
 </head>
 
-<body onresize="SetTime()"><canvas id="myCanvas"></canvas></body>
+<body onresize="Resize()"><canvas id="myCanvas"></canvas></body>
 
 </html>
 <script src="./src/wordclock.js"></script>
