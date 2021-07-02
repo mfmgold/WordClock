@@ -1,9 +1,16 @@
 // (c) Murtuza Masalawala 11.6.2021
-let version = '2.1.1'; // update version here.
+let version = '2.2.0'; // update version here.
 var canvas, ctx;
 var padx = pady = 20;
 var cellw, cellh;
 
+Number.prototype.pad = function(size) {
+    var s = String(this);
+    while (s.length < (size || 2)) {
+        s = '0' + s;
+    }
+    return s;
+}
 var loc = {
     longitude: 0,
     latitude: 0
@@ -48,6 +55,7 @@ var panel = {
     H11: [84, 89],
     OClock: [96, 102]
 };
+
 
 canvas = document.getElementById('myCanvas');
 ctx = canvas.getContext('2d');
@@ -128,6 +136,8 @@ function setTime() {
         lightUp(panel.MFive);
     } else if (m >= 30 && m < 35) lightUp(panel.MHalf);
 
+    displayDate(d);
+
     setTimeout(setTime, 1000); //One second
 }
 
@@ -136,12 +146,31 @@ function lightUp(pnl) {
     // Light up the letters with the glow color
     for (idx = pnl[0]; idx <= pnl[1]; idx++) {
         let x = (idx % 12) * cellw + padx;
-        let y = (1 + Math.trunc(idx / 12)) * cellh + pady;
+        let y = (2 + Math.trunc(idx / 12)) * cellh + pady;
         ctx.fillStyle = glowColor;
         ctx.font = letterFontStyle;
         let z = (cellw - ctx.measureText(letter[idx]).width) / 2;
         ctx.fillText(letter[idx], x + z, y + cellh - 10);
     }
+}
+
+function displayDate(current) {
+    // Display Date from Second column in the Seond row, formatted as SAT 20 JAN 
+    let day = current.toLocaleString('default', { weekday: 'short' }).toUpperCase();
+    let month = current.toLocaleString('default', { month: 'short' }).toUpperCase();
+    let cDate = [day.substring(0, 1), day.substring(1, 2), day.substring(2, 3), 'M', current.getDate().pad(2).substring(0, 1), current.getDate().pad(2).substring(1, 2), 'F', month.substring(0, 1), month.substring(1, 2), month.substring(2, 3), 'M'];
+    let idx = 0;
+    ctx.clearRect(cellw + padx, cellh + pady, 12 * cellw, cellh); // clear second row for date 
+    for (col = 1; col < 12; col++) { // first  cell are occupied by the icon. 
+        x = col * cellw + padx;
+        y = 1 * cellh + pady; //row 1
+        ctx.fillStyle = (idx == 3 || idx == 6 || idx == 10) ? idleColor : glowColor;
+        let z = (cellw - ctx.measureText(cDate[idx]).width) / 2;
+        ctx.font = letterFontStyle;
+        ctx.fillText(cDate[idx], x + z, y + cellh - 20);
+        idx++;
+    }
+
 }
 
 function frameResize() {
@@ -152,10 +181,9 @@ function frameResize() {
 }
 
 function blackOut() {
-
     // draw board with numbers in idleColor
     let idx = 0;
-    for (row = 1; row < 10; row++) {
+    for (row = 2; row < 11; row++) { // first row is for weather, second for date, third onwards for time
         for (col = 0; col < 12; col++) {
             let x = col * cellw + padx;
             let y = row * cellh + pady;
@@ -178,9 +206,9 @@ function setCanvasSize() {
     ctx.canvas.width = document.documentElement.clientWidth;
     ctx.canvas.height = document.documentElement.clientHeight;
     cellw = (ctx.canvas.width - 2 * padx) / 12;
-    cellh = (ctx.canvas.height - 2 * pady) / 10;
+    cellh = (ctx.canvas.height - 2 * pady) / 11;
     setFontSize();
-    console.log("screen width:" + ctx.canvas.width + " screen height:" + ctx.canvas.height + " cell width:" + Math.trunc(cellw) + " cell height:" + Math.trunc(cellh) + " letter font:" + letterFontStyle + " weather font:" + weatherFontStyle);
+
 }
 
 function setFontSize() {
@@ -194,10 +222,11 @@ function setFontSize() {
         metrics = ctx.measureText('W');
         w = Math.trunc(metrics.width);
         h = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-    } while ((w > (cellw - 40)) && (h > (cellh - 40)));
+    } while ((w > (cellw - 20)) || (h > (cellh - 20)));
     //while (((cellw - w) < 40) && ((cellh - h) < 40)); //gap of 20 pixels on each side of the cell to fit and aesthetics
     letterFontStyle = tryFontStyle; //set the correct font style with size to fit for display
     weatherFontStyle = Math.trunc(sz / (1.67)) + 'px ' + letterFont;
+    console.log("screen width:" + ctx.canvas.width + " screen height:" + ctx.canvas.height + " cell width:" + Math.trunc(cellw) + " font width:" + Math.trunc(w) + " cell height:" + Math.trunc(cellh) + " font height:" + Math.trunc(h) + " letter font:" + letterFontStyle + " weather font:" + weatherFontStyle);
 }
 
 function checkPointinWeatherPanel(x, y) {
@@ -283,7 +312,7 @@ function displayWeather() {
     img.onload = function() {
         let x = 0 * cellw + padx; // col 0
         let y = 0 * cellh + pady; // row 0
-        let imgsz = cellw > cellh ? cellh : cellw;
+        let imgsz = cellw > cellh ? 2 * cellh : 2 * cellw; // display image in 2 cells 
         ctx.drawImage(img, x, y, imgsz, imgsz);
     };
     img.src = weather.iconLink + weather.iconCode + "@2x.png"; // the smallest icon size from openweather
@@ -294,9 +323,9 @@ function displayWeather() {
     weather.mainCondition = weather.mainCondition.toUpperCase().padEnd(7).substring(0, 7); // limit the length to 7 or pad with space if less than 7
     let weatherData = [
         weather.temp + degree,
-        '',
-        weather.tempMax + '°h',
-        weather.tempMin + '°l',
+        'h/l', // to advice the next 2 readins are hight and low temp
+        weather.tempMax + degree,
+        weather.tempMin + degree,
         weather.mainCondition.substring(0, 1),
         weather.mainCondition.substring(1, 2),
         weather.mainCondition.substring(2, 3),
@@ -309,16 +338,22 @@ function displayWeather() {
 
     // draw weather panel in the first row
     let idx = 0;
-    ctx.clearRect(padx, pady, 11 * cellw + padx, cellh + pady);
+    ctx.clearRect(padx, pady, 12 * cellw, cellh); // clear first row for weather
     for (col = 1; col < 12; col++) { // first two cells are occupied by the icon. 
         x = col * cellw + padx;
         y = 0 * cellh + pady; //row 0
-        // ctx.rect(x, y, cellw, cellh);
+        if (weatherData[idx] == ' ') {
+            // show a random alphabet in the empty spaces in the idle color
+            weatherData[idx] = String.fromCharCode(getRndInteger(65, 90))
+            ctx.fillStyle = idleColor;
+        } else ctx.fillStyle = glowColor;
         ctx.font = col > 4 ? letterFontStyle : weatherFontStyle;
         let z = (cellw - ctx.measureText(weatherData[idx]).width) / 2;
-        ctx.fillStyle = glowColor;
         ctx.fillText(weatherData[idx], x + z, y + cellh - 20);
         idx++;
     }
+}
 
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
