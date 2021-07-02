@@ -180,6 +180,7 @@ function setCanvasSize() {
     cellw = (ctx.canvas.width - 2 * padx) / 12;
     cellh = (ctx.canvas.height - 2 * pady) / 10;
     setFontSize();
+    console.log("screen width:" + ctx.canvas.width + " screen height:" + ctx.canvas.height + " cell width:" + Math.trunc(cellw) + " cell height:" + Math.trunc(cellh) + " letter font:" + letterFontStyle + " weather font:" + weatherFontStyle);
 }
 
 function setFontSize() {
@@ -193,9 +194,10 @@ function setFontSize() {
         metrics = ctx.measureText('W');
         w = Math.trunc(metrics.width);
         h = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-    } while (((cellw - w) < 40) && ((cellh - h) < 40)); //gap of 20 pixels on each side of the cell to fit and aesthetics
+    } while ((w > (cellw - 40)) && (h > (cellh - 40)));
+    //while (((cellw - w) < 40) && ((cellh - h) < 40)); //gap of 20 pixels on each side of the cell to fit and aesthetics
     letterFontStyle = tryFontStyle; //set the correct font style with size to fit for display
-    weatherFontStyle = sz / (1.5) + 'px ' + letterFont;
+    weatherFontStyle = Math.trunc(sz / (1.67)) + 'px ' + letterFont;
 }
 
 function checkPointinWeatherPanel(x, y) {
@@ -285,7 +287,7 @@ function displayWeather() {
         ctx.drawImage(img, x, y, imgsz, imgsz);
     };
     img.src = weather.iconLink + weather.iconCode + "@2x.png"; // the smallest icon size from openweather
-    let degree = weather.displayUnit == units[1] ? '°C' : '°F'; // set C or F as per display unit preference
+    let degree = weather.displayUnit == units[1] ? '°c' : '°f'; // set C or F as per display unit preference
 
     // alert(weather.temp + " : " + weather.tempMax + " : " + weather.tempMin + " : " + weather.mainCondition + " : " + weather.iconCode);
 
@@ -307,12 +309,12 @@ function displayWeather() {
 
     // draw weather panel in the first row
     let idx = 0;
+    ctx.clearRect(padx, pady, 11 * cellw + padx, cellh + pady);
     for (col = 1; col < 12; col++) { // first two cells are occupied by the icon. 
         x = col * cellw + padx;
         y = 0 * cellh + pady; //row 0
-
-        ctx.rect(x, y, cellw, cellh);
-        ctx.font = weatherFontStyle;
+        // ctx.rect(x, y, cellw, cellh);
+        ctx.font = col > 4 ? letterFontStyle : weatherFontStyle;
         let z = (cellw - ctx.measureText(weatherData[idx]).width) / 2;
         ctx.fillStyle = glowColor;
         ctx.fillText(weatherData[idx], x + z, y + cellh - 20);
