@@ -1,5 +1,5 @@
 // (c) Murtuza Masalawala 11.6.2021
-let version = '2.1.0'; // update version here.
+let version = '2.1.1'; // update version here.
 var canvas, ctx;
 var padx = pady = 20;
 var cellw, cellh;
