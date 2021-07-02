@@ -1,5 +1,6 @@
 // (c) Murtuza Masalawala 11.6.2021
 let version = '2.2.0'; // update version here.
+console.log("(c) Murtuza Masalawala, clever.code, version:" + version);
 var canvas, ctx;
 var padx = pady = 20;
 var cellw, cellh;
@@ -312,7 +313,7 @@ function displayWeather() {
     img.onload = function() {
         let x = 0 * cellw + padx; // col 0
         let y = 0 * cellh + pady; // row 0
-        let imgsz = cellw > cellh ? 2 * cellh : 2 * cellw; // display image in 2 cells 
+        let imgsz = cellw >= 2 * cellh ? 2 * cellh : cellw; // display image in 2 vertical cellse 2x1
         ctx.drawImage(img, x, y, imgsz, imgsz);
     };
     img.src = weather.iconLink + weather.iconCode + "@2x.png"; // the smallest icon size from openweather
