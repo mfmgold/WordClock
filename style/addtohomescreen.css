@@ -43,6 +43,7 @@
     overflow-wrap: break-word;
 }
 
+
 .banner-top-left {
     top: 0;
     left: 0;
@@ -93,49 +94,65 @@
     bottom: 0;
 }
 
+
 @media (min-width: 576px) {
+
     .banner-dialog-centered {
         min-height: calc(100% - 3.5rem);
     }
+
     .ath-banner-cell {
         width: 90px;
         margin: 3px;
     }
+
 }
 
 @media(min-width: 768px) {
+
     .ath-banner-title {
         width: calc(100% - 360px);
     }
+
     .ath-banner-cell-2x,
     .ath-banner-cell {
         width: 120px;
     }
+
     .ath-banner-cell-2x {
         width: 160px;
     }
+
 }
 
 @media (min-width: 992px) {
+
     .banner-lg {
         width: 50%;
     }
+
     .banner-lg-top-center {
         left: 25%;
         top: 12px;
     }
+
     .banner-lg-bottom-center {
         left: 25%;
         bottom: 12px;
     }
+
     .banner-bottom-center {
         width: 60%;
         left: 20%;
     }
+
     .ath-container img {
         left: 15%;
     }
+
 }
+
+
 
 .edge-wrapper,
 .firefox-wrapper,

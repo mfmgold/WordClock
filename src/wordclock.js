@@ -300,6 +300,7 @@ function getWeather() {
             weather.mainCondition = weatherData.weather[0].main;
             weather.iconCode = weatherData.weather[0].icon;
             weather.success = true;
+            console.log("Weather data fecthed at:" + new Date());
             displayWeather();
         } else weather.success = false;
     }
