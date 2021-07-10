@@ -1,5 +1,5 @@
 // (c) Murtuza Masalawala 11.6.2021
-let version = '2.2.0'; // update version here.
+let version = '2.2.1'; // update version here.
 console.log("(c) Murtuza Masalawala, clever.code, version:" + version);
 var canvas, ctx;
 var padx = pady = 20;
@@ -30,9 +30,6 @@ var weather = {
     iconLink: "http://openweathermap.org/img/wn/"
 };
 
-
-//var letter = ['I', 'T', 'T', 'I', 'S ', 'I', 'T', 'W', 'E', 'N', 'T', 'Y', 'Q', 'U', 'A', 'R', 'T', 'E', 'R', 'H', 'A', 'L', 'F', 'M', 'T', 'E', 'N', 'F', 'I', 'V', 'E', 'E', 'P', 'A', 'S', 'T', 'T', 'O', 'A', 'T', 'W', 'E', 'L', 'V', 'E', 'O', 'N', 'E', 'T', 'W', 'O', 'T', 'H', 'R', 'E', 'E', 'F', 'O', 'U', 'R', 'F ', 'I', 'V', 'E', 'S', 'I', 'X', 'S', 'E', 'V', 'E', 'N', 'E', 'I', 'G', 'H', 'T', 'N', 'I', 'N', 'E', 'T', 'E', 'N', 'E', 'L', 'E', 'V', 'E', 'N', 'N', 'D', 'D', 'A', 'T', 'E', 'O', "'", 'C', 'L', 'O', 'C', 'K', 'T', 'I', 'M', 'E', 'A'];
-
 var letter = ['I', 'T', 'T', 'I', 'S ', 'I', 'T', 'W', 'E', 'N', 'T', 'Y', 'Q', 'U', 'A', 'R', 'T', 'E', 'R', 'H', 'A', 'L', 'F', 'M', 'T', 'E', 'N', 'F', 'I', 'V', 'E', 'E', 'P', 'A', 'S', 'T', 'T', 'O', 'A', 'T', 'W', 'E', 'L', 'V', 'E', 'O', 'N', 'E', 'T', 'W', 'O', 'T', 'H', 'R', 'E', 'E', 'F', 'O', 'U', 'R', 'F ', 'I', 'V', 'E', 'S', 'I', 'X', 'S', 'E', 'V', 'E', 'N', 'E', 'I', 'G', 'H', 'T', 'N', 'I', 'N', 'E', 'T', 'E', 'N', 'E', 'L', 'E', 'V', 'E', 'N', 'N', 'D', 'D', 'A', 'T', 'E', 'O', "'", 'C', 'L', 'O', 'C', 'K', 'T', 'I', 'M', 'E', 'A'];
 var panel = {
     MTwenty: [6, 11],
@@ -57,13 +54,14 @@ var panel = {
     OClock: [96, 102]
 };
 
-
 canvas = document.getElementById('myCanvas');
 ctx = canvas.getContext('2d');
 var glowColor, idleColor, gridColor;
 var letterFont = 'Arial';
 var letterFontStyle, weatherFontStyle;
 var theme = 'dark';
+
+let checkPointinWeatherPanel = x => x >= 0 && x < cellw * 12 && y >= 0 && y <= cellh * 1; // check if x, y is in first row; // check if x, y is in first row, to toggle between Units. 
 
 // get or set the Theme preference from cookie. 
 if (getCookie('theme') != '') {
@@ -82,17 +80,16 @@ if (getCookie('weatherunit') != '') {
 frameResize();
 
 function goFullScreen() {
-    if (canvas.requestFullscreen) {
+    if (canvas.requestFullscreen) {    
         canvas.requestFullscreen();
-    } else if (canvas.mozRequestFullScreen) {
+    } else if (canvas.mozRequestFullScreen) {      
         canvas.mozRequestFullScreen();
-    } else if (canvas.webkitRequestFullscreen) {
+    } else if (canvas.webkitRequestFullscreen) {    
         canvas.webkitRequestFullscreen();
-    } else if (canvas.msRequestFullscreen) {
+    } else if (canvas.msRequestFullscreen) {  
         canvas.msRequestFullscreen();
     }
 }
-
 
 function clockAppearance() {
     if (theme == 'dark') { //dark time
@@ -110,8 +107,7 @@ function clockAppearance() {
 function setTime() {
     var d = new Date();
     //console.log(weather.interval);
-    if (weather.interval-- == 0) {
-        
+    if (weather.interval-- == 0) {       
         weather.interval = 600; // reset to 10 minutes weather fetch interval
         getLocation(); // start to collect weather data
     }
@@ -140,10 +136,9 @@ function setTime() {
     } else if (m >= 30 && m < 35) lightUp(panel.MHalf);
 
     displayDate(d);
-
+            
     setTimeout(setTime, 1000); //One second
 }
-
 
 function lightUp(pnl) {
     // Light up the letters with the glow color
@@ -211,7 +206,6 @@ function setCanvasSize() {
     cellw = (ctx.canvas.width - 2 * padx) / 12;
     cellh = (ctx.canvas.height - 2 * pady) / 11;
     setFontSize();
-
 }
 
 function setFontSize() {
@@ -232,9 +226,6 @@ function setFontSize() {
     console.log("screen width:" + ctx.canvas.width + " screen height:" + ctx.canvas.height + " cell width:" + Math.trunc(cellw) + " font width:" + Math.trunc(w) + " cell height:" + Math.trunc(cellh) + " font height:" + Math.trunc(h) + " letter font:" + letterFontStyle + " weather font:" + weatherFontStyle);
 }
 
-function checkPointinWeatherPanel(x, y) {
-    return (x >= 0 && x < cellw * 12 && y >= 0 && y <= cellh * 1); // check if x, y is in first row
-}
 canvas.onclick = function(event) {
     var boundingRect = canvas.getBoundingClientRect();
     // translate mouse event coordinates to canvas coordinates
