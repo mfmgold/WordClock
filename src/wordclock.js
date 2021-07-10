@@ -109,7 +109,9 @@ function clockAppearance() {
 
 function setTime() {
     var d = new Date();
+    //console.log(weather.interval);
     if (weather.interval-- == 0) {
+        
         weather.interval = 600; // reset to 10 minutes weather fetch interval
         getLocation(); // start to collect weather data
     }
@@ -300,7 +302,7 @@ function getWeather() {
             weather.mainCondition = weatherData.weather[0].main;
             weather.iconCode = weatherData.weather[0].icon;
             weather.success = true;
-            console.log("Weather data fecthed at:" + new Date());
+            console.log("Weather data fetched at:" + new Date());
             displayWeather();
         } else weather.success = false;
     }
