@@ -61,7 +61,7 @@ var letterFont = 'Arial';
 var letterFontStyle, weatherFontStyle;
 var theme = 'dark';
 
-let checkPointinWeatherPanel = x => x >= 0 && x < cellw * 12 && y >= 0 && y <= cellh * 1; // check if x, y is in first row; // check if x, y is in first row, to toggle between Units. 
+let checkPointinWeatherPanel = (x,y) => x >= 0 && x < cellw * 12 && y >= 0 && y <= cellh * 1; // check if x, y is in first row; // check if x, y is in first row, to toggle between Units. 
 
 // get or set the Theme preference from cookie. 
 if (getCookie('theme') != '') {
@@ -106,7 +106,7 @@ function clockAppearance() {
 
 function setTime() {
     var d = new Date();
-    //console.log(weather.interval);
+   
     if (weather.interval-- == 0) {       
         weather.interval = 600; // reset to 10 minutes weather fetch interval
         getLocation(); // start to collect weather data
@@ -168,11 +168,9 @@ function displayDate(current) {
         ctx.fillText(cDate[idx], x + z, y + cellh - 20);
         idx++;
     }
-
 }
 
-function frameResize() {
-    goFullScreen();
+function frameResize() {  
     setCanvasSize();
     weather.interval = 0; // to ensure that on frameResize the weather data is also displayed.
     setTime();
@@ -226,19 +224,20 @@ function setFontSize() {
     console.log("screen width:" + ctx.canvas.width + " screen height:" + ctx.canvas.height + " cell width:" + Math.trunc(cellw) + " font width:" + Math.trunc(w) + " cell height:" + Math.trunc(cellh) + " font height:" + Math.trunc(h) + " letter font:" + letterFontStyle + " weather font:" + weatherFontStyle);
 }
 
-canvas.onclick = function(event) {
-    var boundingRect = canvas.getBoundingClientRect();
-    // translate mouse event coordinates to canvas coordinates
-    x = (event.clientX - boundingRect.left) * (canvas.width / boundingRect.width);
-    y = (event.clientY - boundingRect.top) * (canvas.height / boundingRect.height);
+var fullScreen = () => !window.screenTop && !window.screenY; // arrow function to check if window is full screen. 
 
-    if (checkPointinWeatherPanel(x, y)) { // if user clicks/taps on the weather panel the unit toggles betweem metric and imperial.
-        weather.displayUnit = weather.displayUnit == units[1] ? units[2] : units[1];
-    } else {
-        theme = theme == 'dark' ? 'light' : 'dark';
+canvas.onclick = function(event) {
+    if (!fullScreen()) goFullScreen();     
+    else {
+        var boundingRect = canvas.getBoundingClientRect();
+        // translate mouse event coordinates to canvas coordinates
+        x = (event.clientX - boundingRect.left) * (canvas.width / boundingRect.width);
+        y = (event.clientY - boundingRect.top) * (canvas.height / boundingRect.height);
+        if (checkPointinWeatherPanel(x, y)) weather.displayUnit = weather.displayUnit == units[1] ? units[2] : units[1]; // if user clicks/taps on the weather panel the unit toggles betweem metric and imperial.
+        else theme = theme == 'dark' ? 'light' : 'dark';      
+        setCookie('theme', theme, 365);
+        setCookie('weatherunit', weather.displayUnit, 365);
     }
-    setCookie('theme', theme, 365);
-    setCookie('weatherunit', weather.displayUnit, 365);
     frameResize();
 }
 
