@@ -1,5 +1,5 @@
 // (c) Murtuza Masalawala 11.6.2021
-let version = '2.2.1'; // update version here.
+let version = '2.2.2'; // update version here.
 console.log("(c) Murtuza Masalawala, clever.code, version:" + version);
 var canvas, ctx;
 var padx = pady = 20;
@@ -69,35 +69,16 @@ let getSettings = cname => window.localStorage.getItem(cname);
 // get or set the Theme preference from local storage. 
 if (getSettings('theme') != null) {
     theme = getSettings('theme');
-    alert('Get Theme:' + theme);
 } else {
     setSettings('theme', theme);
-    alert('Set Theme:' + theme);
 }
 
 // get or set the weather unit preference from local storage. 
 if (getSettings('weatherunit') != null) {
     weather.displayUnit = getSettings('weatherunit');
-    alert('Get Units:' + weather.displayUnit);
 } else {
     setSettings('weatherunit', weather.displayUnit);
-    alert('Set Units:' + weather.displayUnit);
 }
-
-
-// get or set the Theme preference from cookie. 
-//if (getCookie('theme') != '') {
-//    theme = getCookie('theme');
-//} else {
-//    setCookie('theme', theme, 365);
-//}
-
-//// get or set the weather unit preference from cookie. 
-//if (getCookie('weatherunit') != '') {
-//    weather.displayUnit = getCookie('weatherunit');
-//} else {
-//    setCookie('weatherunit', weather.displayUnit, 365);
-//}
 
 frameResize();
 
@@ -259,37 +240,8 @@ canvas.onclick = function(event) {
         else theme = theme == 'dark' ? 'light' : 'dark';     
         setSettings('theme', theme, 365);
         setSettings('weatherunit', weather.displayUnit, 365); 
-        //setCookie('theme', theme, 365);
-        //setCookie('weatherunit', weather.displayUnit, 365);
     }
     frameResize();
-}
-
-
-
-
-
-function setCookie(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    var expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
 }
 
 function getLocation() {
