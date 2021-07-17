@@ -63,19 +63,41 @@ var theme = 'dark';
 
 let checkPointinWeatherPanel = (x,y) => x >= 0 && x < cellw * 12 && y >= 0 && y <= cellh * 1; // check if x, y is in first row; // check if x, y is in first row, to toggle between Units. 
 
-// get or set the Theme preference from cookie. 
-if (getCookie('theme') != '') {
-    theme = getCookie('theme');
+let setSettings= (cname, cvalue) => window.localStorage.setItem(cname, cvalue);
+let getSettings = cname => window.localStorage.getItem(cname);
+
+// get or set the Theme preference from local storage. 
+if (getSettings('theme') != null) {
+    theme = getSettings('theme');
+    alert('Get Theme:' + theme);
 } else {
-    setCookie('theme', theme, 365);
+    setSettings('theme', theme);
+    alert('Set Theme:' + theme);
 }
 
-// get or set the weather unit preference from cookie. 
-if (getCookie('weatherunit') != '') {
-    weather.displayUnit = getCookie('weatherunit');
+// get or set the weather unit preference from local storage. 
+if (getSettings('weatherunit') != null) {
+    weather.displayUnit = getSettings('weatherunit');
+    alert('Get Units:' + weather.displayUnit);
 } else {
-    setCookie('weatherunit', weather.displayUnit, 365);
+    setSettings('weatherunit', weather.displayUnit);
+    alert('Set Units:' + weather.displayUnit);
 }
+
+
+// get or set the Theme preference from cookie. 
+//if (getCookie('theme') != '') {
+//    theme = getCookie('theme');
+//} else {
+//    setCookie('theme', theme, 365);
+//}
+
+//// get or set the weather unit preference from cookie. 
+//if (getCookie('weatherunit') != '') {
+//    weather.displayUnit = getCookie('weatherunit');
+//} else {
+//    setCookie('weatherunit', weather.displayUnit, 365);
+//}
 
 frameResize();
 
@@ -234,12 +256,18 @@ canvas.onclick = function(event) {
         x = (event.clientX - boundingRect.left) * (canvas.width / boundingRect.width);
         y = (event.clientY - boundingRect.top) * (canvas.height / boundingRect.height);
         if (checkPointinWeatherPanel(x, y)) weather.displayUnit = weather.displayUnit == units[1] ? units[2] : units[1]; // if user clicks/taps on the weather panel the unit toggles betweem metric and imperial.
-        else theme = theme == 'dark' ? 'light' : 'dark';      
-        setCookie('theme', theme, 365);
-        setCookie('weatherunit', weather.displayUnit, 365);
+        else theme = theme == 'dark' ? 'light' : 'dark';     
+        setSettings('theme', theme, 365);
+        setSettings('weatherunit', weather.displayUnit, 365); 
+        //setCookie('theme', theme, 365);
+        //setCookie('weatherunit', weather.displayUnit, 365);
     }
     frameResize();
 }
+
+
+
+
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
